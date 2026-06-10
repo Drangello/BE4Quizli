@@ -3,9 +3,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Question, Quiz
+from .models import Quiz
 from .serializers import QuizSerializer
-from .utils import create_dummy_questions
+from .services import create_quiz_from_url
 
 
 class QuizListCreateView(APIView):
@@ -24,18 +24,13 @@ class QuizListCreateView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        quiz = Quiz.objects.create(
+        quiz = create_quiz_from_url(
             user=request.user,
-            title="Quiz Title",
-            description="Quiz Description",
             video_url=request.data.get("url"),
         )
-        self.create_questions(quiz)
-
         serializer = QuizSerializer(quiz)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def create_questions(self, quiz):
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
         questions = create_dummy_questions()
 
         for question in questions:
