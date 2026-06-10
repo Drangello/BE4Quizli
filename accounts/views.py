@@ -74,3 +74,4 @@ class LoginView(APIView):
         )
         set_auth_cookies(response, refresh)
         return response
+    
