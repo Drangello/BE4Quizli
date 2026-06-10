@@ -74,4 +74,61 @@ class LoginView(APIView):
         )
         set_auth_cookies(response, refresh)
         return response
-    
+
+
+class LogoutView(APIView):
+    """
+    Logout user and blacklist refresh token.
+    """
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response(
+                {"detail": "Not authenticated."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+
+        response = Response(
+            {
+                "detail":
+                "Log-Out successfully! All Tokens will be deleted. "
+                "Refresh token is now invalid."
+            },
+            status=status.HTTP_200_OK,
+        )
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
+        return response
+
+
+class TokenRefreshCookieView(APIView):
+    """
+    Refresh access token by refresh cookie.
+    """
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response(
+                {"detail": "Refresh Token missing."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        refresh = RefreshToken(refresh_token)
+        response = Response(
+            {"detail": "Token refreshed"},
+            status=status.HTTP_200_OK,
+        )
+        response.set_cookie(
+            "access_token",
+            str(refresh.access_token),
+            httponly=True,
+            samesite="Lax",
+        )
+        return response
