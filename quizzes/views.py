@@ -43,3 +43,60 @@ class QuizListCreateView(APIView):
                 quiz=quiz,
                 **question,
             )
+
+
+class QuizDetailView(APIView):
+    """
+    Retrieve, update or delete one quiz.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get_quiz(self, request, quiz_id):
+        return Quiz.objects.filter(
+            id=quiz_id,
+            user=request.user,
+        ).first()
+
+    def get(self, request, quiz_id):
+        quiz = self.get_quiz(request, quiz_id)
+
+        if quiz is None:
+            return Response(
+                {"detail": "Quiz not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = QuizSerializer(quiz)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request, quiz_id):
+        quiz = self.get_quiz(request, quiz_id)
+
+        if quiz is None:
+            return Response(
+                {"detail": "Quiz not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = QuizSerializer(
+            quiz,
+            data=request.data,
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, quiz_id):
+        quiz = self.get_quiz(request, quiz_id)
+
+        if quiz is None:
+            return Response(
+                {"detail": "Quiz not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        quiz.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
