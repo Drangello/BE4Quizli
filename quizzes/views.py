@@ -7,7 +7,6 @@ from .models import Quiz
 from .serializers import QuizSerializer
 from .services import create_quiz_from_url
 
-
 class QuizListCreateView(APIView):
     """
     List user quizzes or create a new quiz.
@@ -31,13 +30,6 @@ class QuizListCreateView(APIView):
         serializer = QuizSerializer(quiz)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-        questions = create_dummy_questions()
-
-        for question in questions:
-            Question.objects.create(
-                quiz=quiz,
-                **question,
-            )
 
 
 class QuizDetailView(APIView):
