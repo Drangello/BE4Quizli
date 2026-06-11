@@ -1,8 +1,11 @@
 import json
 import os
+import time
 
 from dotenv import load_dotenv
 from google import genai
+
+from .utils import create_dummy_questions
 
 
 load_dotenv()
@@ -18,19 +21,50 @@ def get_gemini_client():
     return genai.Client(api_key=api_key)
 
 
-def test_gemini():
+def clean_json_response(response_text):
     """
-    Test Gemini connection.
+    Remove markdown from Gemini JSON response.
     """
 
-    client = get_gemini_client()
+    return response_text.replace("```json", "").replace("```", "").strip()
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents="Answer only with: Quizly works",
-    )
 
-    return response.text
+def build_quiz_prompt(transcript):
+    """
+    Build prompt for Gemini quiz generation.
+    """
+
+    return f"""
+Create a quiz from the following transcript.
+
+Return ONLY valid JSON with:
+title, description, questions.
+
+Rules:
+- Create exactly 10 questions
+- Each question has question_title
+- Each question has exactly 4 question_options
+- Each question has one answer
+- The answer must match one option exactly
+- No markdown
+- No explanation
+
+Transcript:
+{transcript}
+"""
+
+
+def get_fallback_quiz():
+    """
+    Return fallback quiz if Gemini fails.
+    """
+
+    return {
+        "title": "Quiz Title",
+        "description": "Quiz Description",
+        "questions": create_dummy_questions(),
+    }
+
 
 def generate_quiz_content(transcript):
     """
@@ -38,47 +72,20 @@ def generate_quiz_content(transcript):
     """
 
     client = get_gemini_client()
+    prompt = build_quiz_prompt(transcript)
 
-    prompt = f"""
-Create a quiz from the following transcript.
+    for _ in range(3):
+        try:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+            )
+            clean_text = clean_json_response(response.text)
 
-Return ONLY valid JSON.
+            return json.loads(clean_text)
 
-Format:
+        except Exception as error:
+            print(error)
+            time.sleep(3)
 
-{{
-  "title": "Quiz Title",
-  "description": "Quiz Description",
-  "questions": [
-    {{
-      "question_title": "Question",
-      "question_options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "answer": "Correct Answer"
-    }}
-  ]
-}}
-
-Rules:
-- Create exactly 10 questions
-- Exactly 4 answer options
-- One correct answer
-- Return valid JSON only
-- No markdown
-- No explanation
-
-Transcript:
-
-{transcript}
-"""
-
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt,
-    )
-
-    return json.loads(response.text)
+    return get_fallback_quiz()
