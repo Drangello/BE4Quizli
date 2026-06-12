@@ -7,6 +7,7 @@ from .models import Quiz
 from .serializers import QuizSerializer
 from .services import create_quiz_from_url
 
+
 class QuizListCreateView(APIView):
     """
     List user quizzes or create a new quiz.

@@ -48,6 +48,7 @@ Rules:
 - The answer must match one option exactly
 - No markdown
 - No explanation
+- Create the title, description, questions and answers in German
 
 Transcript:
 {transcript}
@@ -60,11 +61,10 @@ def get_fallback_quiz():
     """
 
     return {
-        "title": "Quiz Title",
-        "description": "Quiz Description",
+        "title": "Ersatz Quiz",
+        "description": "Automatisch erzeugtes Ersatzquiz.",
         "questions": create_dummy_questions(),
     }
-
 
 def generate_quiz_content(transcript):
     """
@@ -84,8 +84,7 @@ def generate_quiz_content(transcript):
 
             return json.loads(clean_text)
 
-        except Exception as error:
-            print(error)
+        except Exception:
             time.sleep(3)
 
     return get_fallback_quiz()
