@@ -6,9 +6,29 @@ from yt_dlp import YoutubeDL
 DOWNLOAD_DIR = Path("media/audio")
 
 
-def download_audio(video_url):
+def get_download_options(output_template):
     """
-    Download youtube audio file.
+    Return yt-dlp download options.
+    """
+
+    return {
+        "format": "bestaudio/best",
+        "outtmpl": output_template,
+        "quiet": True,
+    }
+
+
+def get_output_template():
+    """
+    Return yt-dlp output template.
+    """
+
+    return str(DOWNLOAD_DIR / "%(id)s.%(ext)s")
+
+
+def ensure_download_dir():
+    """
+    Create audio download directory.
     """
 
     DOWNLOAD_DIR.mkdir(
@@ -16,20 +36,17 @@ def download_audio(video_url):
         exist_ok=True,
     )
 
-    output_template = str(
-        DOWNLOAD_DIR / "%(id)s.%(ext)s"
-    )
 
-    options = {
-        "format": "bestaudio/best",
-        "outtmpl": output_template,
-        "quiet": True,
-    }
+def download_audio(video_url):
+    """
+    Download youtube audio file.
+    """
+
+    ensure_download_dir()
+    output_template = get_output_template()
+    options = get_download_options(output_template)
 
     with YoutubeDL(options) as youtube:
-        info = youtube.extract_info(
-            video_url,
-            download=True,
-        )
+        info = youtube.extract_info(video_url, download=True)
 
     return DOWNLOAD_DIR / f"{info['id']}.{info['ext']}"
