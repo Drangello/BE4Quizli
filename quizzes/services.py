@@ -10,13 +10,7 @@ def create_quiz_from_url(user, video_url):
     """
 
     quiz_data = create_quiz_from_video(video_url)
-
-    quiz = Quiz.objects.create(
-        user=user,
-        title=quiz_data["title"],
-        description=quiz_data["description"],
-        video_url=video_url,
-    )
+    quiz = save_quiz(user, video_url, quiz_data)
 
     create_questions(quiz, quiz_data["questions"])
 
@@ -32,6 +26,19 @@ def create_quiz_from_video(video_url):
     transcript = transcribe_audio(audio_path)
 
     return generate_quiz_content(transcript)
+
+
+def save_quiz(user, video_url, quiz_data):
+    """
+    Save generated quiz.
+    """
+
+    return Quiz.objects.create(
+        user=user,
+        title=quiz_data["title"],
+        description=quiz_data["description"],
+        video_url=video_url,
+    )
 
 
 def create_questions(quiz, questions):
