@@ -25,7 +25,18 @@ def create_quiz_from_video(video_url):
     audio_path = download_audio(video_url)
     transcript = transcribe_audio(audio_path)
 
+    delete_audio_file(audio_path)
+
     return generate_quiz_content(transcript)
+
+
+def delete_audio_file(audio_path):
+    """
+    Delete temporary audio file.
+    """
+
+    if audio_path.exists():
+        audio_path.unlink()
 
 
 def save_quiz(user, video_url, quiz_data):
