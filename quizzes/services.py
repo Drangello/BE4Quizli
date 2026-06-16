@@ -1,9 +1,12 @@
+from django.db import transaction
+
 from .gemini_service import generate_quiz_content
 from .models import Question, Quiz
 from .whisper_service import transcribe_audio
 from .youtube_service import download_audio
 
 
+@transaction.atomic
 def create_quiz_from_url(user, video_url):
     """
     Create and save quiz from youtube url.
@@ -23,9 +26,10 @@ def create_quiz_from_video(video_url):
     """
 
     audio_path = download_audio(video_url)
-    transcript = transcribe_audio(audio_path)
-
-    delete_audio_file(audio_path)
+    try:
+        transcript = transcribe_audio(audio_path)
+    finally:
+        delete_audio_file(audio_path)
 
     return generate_quiz_content(transcript)
 

@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import RegisterSerializer
@@ -90,8 +91,14 @@ class LogoutView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        token = RefreshToken(refresh_token)
-        token.blacklist()
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        except TokenError:
+            return Response(
+                {"detail": "Not authenticated."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
         response = Response(
             {
@@ -120,7 +127,14 @@ class TokenRefreshCookieView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        refresh = RefreshToken(refresh_token)
+        try:
+            refresh = RefreshToken(refresh_token)
+        except TokenError:
+            return Response(
+                {"detail": "Refresh Token missing."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
         response = Response(
             {"detail": "Token refreshed"},
             status=status.HTTP_200_OK,

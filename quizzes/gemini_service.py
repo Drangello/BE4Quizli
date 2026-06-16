@@ -66,6 +66,7 @@ def get_fallback_quiz():
         "questions": create_dummy_questions(),
     }
 
+
 def generate_quiz_content(transcript):
     """
     Generate quiz data from transcript.

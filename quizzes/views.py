@@ -24,9 +24,17 @@ class QuizListCreateView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
+        video_url = request.data.get("url")
+
+        if not video_url:
+            return Response(
+                {"detail": "URL is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         quiz = create_quiz_from_url(
             user=request.user,
-            video_url=request.data.get("url"),
+            video_url=video_url,
         )
         serializer = QuizSerializer(quiz)
 
