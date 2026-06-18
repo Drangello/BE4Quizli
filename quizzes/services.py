@@ -2,6 +2,7 @@ from django.db import transaction
 
 from .gemini_service import generate_quiz_content
 from .models import Question, Quiz
+from .utils import normalize_youtube_url
 from .whisper_service import transcribe_audio
 from .youtube_service import download_audio
 
@@ -12,8 +13,9 @@ def create_quiz_from_url(user, video_url):
     Create and save quiz from youtube url.
     """
 
-    quiz_data = create_quiz_from_video(video_url)
-    quiz = save_quiz(user, video_url, quiz_data)
+    normalized_video_url = normalize_youtube_url(video_url)
+    quiz_data = create_quiz_from_video(normalized_video_url)
+    quiz = save_quiz(user, normalized_video_url, quiz_data)
 
     create_questions(quiz, quiz_data["questions"])
 
