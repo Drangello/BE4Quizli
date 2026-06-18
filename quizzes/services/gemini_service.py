@@ -5,7 +5,7 @@ import time
 from dotenv import load_dotenv
 from google import genai
 
-from .utils import create_dummy_questions
+from ..utils import create_dummy_questions
 
 
 load_dotenv()

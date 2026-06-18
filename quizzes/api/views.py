@@ -3,9 +3,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Quiz
+from ..models import Quiz
 from .serializers import QuizSerializer
-from .services import create_quiz_from_url
+from ..services.services import create_quiz_from_url
 
 
 class QuizListCreateView(APIView):

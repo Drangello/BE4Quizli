@@ -1,8 +1,8 @@
 from django.db import transaction
 
+from ..models import Question, Quiz
+from ..utils import normalize_youtube_url
 from .gemini_service import generate_quiz_content
-from .models import Question, Quiz
-from .utils import normalize_youtube_url
 from .whisper_service import transcribe_audio
 from .youtube_service import download_audio
 
