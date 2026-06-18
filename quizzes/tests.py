@@ -1,4 +1,4 @@
-from django.test import TestCase
+from unittest import TestCase
 
 from .utils import normalize_youtube_url
 
@@ -35,5 +35,5 @@ class YouTubeUrlNormalizationTests(TestCase):
         )
 
     def test_rejects_invalid_url(self):
-        with self.assertRaisesMessage(ValueError, "Invalid YouTube URL."):
+        with self.assertRaisesRegex(ValueError, "Invalid YouTube URL."):
             normalize_youtube_url("https://example.com/watch?v=VIDEO_ID")

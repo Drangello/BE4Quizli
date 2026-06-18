@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from yt_dlp import YoutubeDL
-
 
 DOWNLOAD_DIR = Path("media/audio")
 
@@ -41,6 +39,8 @@ def download_audio(video_url):
     """
     Download youtube audio file.
     """
+
+    from yt_dlp import YoutubeDL
 
     ensure_download_dir()
     output_template = get_output_template()
