@@ -69,14 +69,6 @@ python manage.py runserver
 
 > The backend will be available at `http://127.0.0.1:8000/`.
 
-### 8. Start the frontend
-
-```bash
-python -m http.server 5500
-```
-
-> The frontend will be available at `http://127.0.0.1:5500/`.
-
 ## Features
 
 * User registration
