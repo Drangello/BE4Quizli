@@ -103,9 +103,3 @@ python manage.py runserver
 * Gemini API
 * yt-dlp
 * FFmpeg
-
-### Frontend
-
-* HTML
-* CSS
-* JavaScript
