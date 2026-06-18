@@ -46,6 +46,7 @@ Create a `.env` file in the project root:
 
 ```env
 GEMINI_API_KEY=your-gemini-api-key
+DJANGO_SECRET_KEY=your-django-secret-key
 ```
 
 ### 5. Run database migrations
